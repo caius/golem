@@ -215,5 +215,11 @@ module Golem
       end
     end
 
+    class Metadata < Base
+      def parse(data)
+        raise RuntimeError, "need to implement"
+      end
+    end
+
   end
 end

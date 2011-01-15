@@ -153,7 +153,7 @@ module Golem
       byte :direction
     end
 
-    client_packet :place, 0x0f do
+    client_packet :player_block_placement, 0x0f do
       int :x
       byte :y
       int :z
@@ -166,9 +166,7 @@ module Golem
       byte :y
       int :z
       byte :direction
-      short :item_id # might be a block id instead
-      byte :amount
-      short :damage
+      field :items, Field::SlotItems
     end
 
     client_packet :holding_change, 0x10 do
@@ -189,6 +187,16 @@ module Golem
       byte :animate
     end
 
+    client_packet :entity_action, 0x13 do
+      int :id
+      byte :action
+    end
+
+    server_packet :entity_action, 0x13 do
+      int :id
+      byte :action
+    end
+
     server_packet :named_entity_spawn, 0x14 do
       int :id
       string :name
@@ -205,6 +213,7 @@ module Golem
       int :id
       short :item
       byte :count
+      short :damage
       int :x
       int :y
       int :z
@@ -217,6 +226,7 @@ module Golem
       int :id
       short :item
       byte :count
+      short :damage
       int :x
       int :y
       int :z
@@ -246,6 +256,25 @@ module Golem
       int :z
       byte :rotation
       byte :pitch
+      field :data_stream, Field::Metadata
+    end
+
+    client_packet :entity_painting, 0x19 do
+      int :id
+      string :title
+      int :x
+      int :y
+      int :z
+      int :type
+    end
+
+    server_packet :entity_painting, 0x19 do
+      int :id
+      string :title
+      int :x
+      int :y
+      int :z
+      int :type
     end
 
     server_packet :entity_velocity, 0x1c do
@@ -306,7 +335,7 @@ module Golem
 
     server_packet :entity_metadata, 0x28 do
       int :entity_id
-      byte :metadata
+      field :metadata, Field::Metadata
     end
 
     server_packet :pre_chunk, 0x32 do
@@ -383,7 +412,7 @@ module Golem
 
     client_packet :window_click, 0x66 do
       byte :window_id
-      short :slot
+      short :slot # -999 is outside inventory window
       byte :right_click
       short :action_number
       field :items, Field::SlotItems
