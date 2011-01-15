@@ -63,6 +63,7 @@ module Golem
       int :entity_id
       short :slot # 0 = held, 1-4 = armor slots
       short :item_id # -1 for empty
+      short :damage # unknown - think it's damage
     end
 
     server_packet :spawn_position, 0x06 do
@@ -160,8 +161,22 @@ module Golem
       field :items, Field::SlotItems
     end
 
+    server_packet :player_block_placement, 0x0f do
+      int :x
+      byte :y
+      int :z
+      byte :direction
+      short :item_id # might be a block id instead
+      byte :amount
+      short :damage
+    end
+
     client_packet :holding_change, 0x10 do
       short :slot_id # slot which player has selected, 0-8
+    end
+
+    server_packet :holding_change, 0x10 do
+      short :slot_id
     end
 
     server_packet :animation, 0x12 do
@@ -289,6 +304,11 @@ module Golem
       int :vehicle_id # -1 for unattach
     end
 
+    server_packet :entity_metadata, 0x28 do
+      int :entity_id
+      byte :metadata
+    end
+
     server_packet :pre_chunk, 0x32 do
       int :x # multiply by 16
       int :z # multiply by 16
@@ -334,12 +354,27 @@ module Golem
       byte :metadata
     end
 
+    server_packet :play_note_block, 0x36 do
+      int :x
+      short :y
+      int :z
+      byte :instrument_type
+      byte :pitch
+    end
+
     server_packet :explosion, 0x3c do
       double :x
       double :y
       double :z
       float :radius # maybe?
       field :explosion, Field::ExplosionBlocks
+    end
+
+    server_packet :open_window, 0x64 do
+      byte :window_id
+      byte :inventory_type
+      string :window_title
+      byte :number_of_slots
     end
 
     client_packet :close_window, 0x65 do
@@ -381,6 +416,21 @@ module Golem
       byte :window_id
       short :action_number
       bool :accepted
+    end
+
+    server_packet :metadata, 0x7f do
+      byte :metadata
+    end
+
+    client_packet :update_sign, 0x82 do
+      int :x
+      short :y
+      int :z
+      # Lines of text in the sign, top to bottom
+      string :line1
+      string :line2
+      string :line3
+      string :line4
     end
 
     client_packet :disconnect, 0xff do
