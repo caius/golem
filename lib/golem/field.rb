@@ -217,7 +217,14 @@ module Golem
 
     class Metadata < Base
       def parse(data)
-        raise RuntimeError, "need to implement"
+        types = []
+        loop do
+          i, data = consume data, "N"
+          types << i
+          break if i == 127
+        end
+
+        [types, data]
       end
     end
 
